@@ -1,0 +1,74 @@
+** Test Case **
+
+* META represents each Key in a JSON Key/Value pair
+* and here describes each attribute in our dynamic array
+
+META = 'Name]Size]Pet]Address]Colour]DoorIs'
+CONVERT "]" TO @VM IN META
+
+DYN.ARRAY = ''
+DYN.ARRAY<1> = 'SUE]]DAVE]'
+DYN.ARRAY<2> = '255\122]]-4500\24578\99'
+DYN.ARRAY<3> = '\DOG]FISH\BIRD]CAT'
+DYN.ARRAY<4> = '1357]Green, "St"]Paris]FR'
+DYN.ARRAY<6> = '\OPEN'
+
+CONVERT "]" TO @VM IN DYN.ARRAY
+CONVERT "\" TO @SVM IN DYN.ARRAY
+
+** Escape quotes in string values **
+DYN.ARRAY = CHANGE(DYN.ARRAY,'"', '\"')
+
+GOSUB MV.TO.JSON
+CRT JSON
+STOP
+** End test case **
+
+MV.TO.JSON: *
+
+  JSON = '{'
+   MAX.ATTRIBUTES = DCOUNT(DYN.ARRAY, @AM)
+   FOR A.POS = 1 TO MAX.ATTRIBUTES
+      IF A.POS > 1 THEN JSON := ', '
+      A.KEY = META<1, A.POS>
+      IF A.KEY = '' THEN A.KEY = 'undefined-':A.POS
+      JSON := '"':A.KEY:'": '
+      A.VALUE = DYN.ARRAY<A.POS>
+      MAX.VALUES = DCOUNT(A.VALUE, @VM)
+      IF MAX.VALUES = 0 THEN MAX.VALUES = 1
+      IF MAX.VALUES > 1 THEN JSON := '['
+      SUB.COUNT = COUNT(A.VALUE, @SVM)
+      FOR V.POS = 1 TO MAX.VALUES
+         V.VALUE = A.VALUE<1,V.POS>
+         IF V.POS > 1 THEN JSON := ', '
+         MAX.SUBVALUES = DCOUNT(V.VALUE, @SVM)
+         IF MAX.SUBVALUES = 0 THEN MAX.SUBVALUES = 1
+         IF MAX.SUBVALUES = 1 AND SUB.COUNT > 0 THEN
+            JSON := '['
+         END
+         IF MAX.SUBVALUES > 1 THEN
+            IF MAX.VALUES = 1 THEN JSON := '['
+            JSON := '['
+         END
+         FOR S.POS = 1 TO MAX.SUBVALUES
+            IF S.POS > 1 THEN JSON := ', '
+            S.VALUE = V.VALUE<1,1,S.POS>
+            IF S.VALUE # '' AND NUM(S.VALUE) THEN
+               JSON := S.VALUE
+            END ELSE
+               JSON := '"':S.VALUE:'"'
+            END
+         NEXT S.POS
+         IF MAX.SUBVALUES > 1 THEN
+            JSON := ']'
+            IF MAX.VALUES = 1 THEN JSON := ']'
+         END
+         IF MAX.SUBVALUES = 1 AND SUB.COUNT > 0 THEN
+            JSON := ']'
+         END
+      NEXT V.POS
+      IF MAX.VALUES > 1 THEN JSON := ']'
+   NEXT A.POS
+   JSON := '}'
+
+   RETURN
