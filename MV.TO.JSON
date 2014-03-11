@@ -56,9 +56,7 @@ FOR A.POS = 1 TO MAX.ATTRIBUTES
       IF V.POS > 1 THEN JSON := ', '
       MAX.SUBVALUES = DCOUNT(V.VALUE, @SVM)
       IF MAX.SUBVALUES = 0 THEN MAX.SUBVALUES = 1
-      IF MAX.SUBVALUES = 1 AND SUB.COUNT > 0 THEN
-         JSON := '['
-      END
+      IF MAX.SUBVALUES = 1 AND SUB.COUNT > 0 THEN JSON := '['
       IF MAX.SUBVALUES > 1 THEN
          IF MAX.VALUES = 1 THEN JSON := '['
          JSON := '['
@@ -76,9 +74,7 @@ FOR A.POS = 1 TO MAX.ATTRIBUTES
          JSON := ']'
          IF MAX.VALUES = 1 THEN JSON := ']'
       END
-      IF MAX.SUBVALUES = 1 AND SUB.COUNT > 0 THEN
-         JSON := ']'
-      END
+      IF MAX.SUBVALUES = 1 AND SUB.COUNT > 0 THEN JSON := ']'
    NEXT V.POS
    IF MAX.VALUES > 1 THEN JSON := ']'
 NEXT A.POS
