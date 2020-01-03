@@ -1,4 +1,4 @@
-#MV.TO.JSON
+# MV.TO.JSON
 
 Use this little code snippet in your subroutines or functions to convert a given MV dynamic array and associated metadata (*see example TEST.MV.TO.JSON*) to correctly formatted JavaScript Object Notation (JSON).
 
